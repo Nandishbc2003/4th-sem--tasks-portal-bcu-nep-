@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Day Details</title>
+  <style>
+    /* Style for the day details form */
+    label, select {
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* Style for the submit button */
+    #submit-button {
+      display: block;
+      margin-top: 10px;
+    }
+
+    /* Style for the day details table */
+    #day-details-table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #day-details-table th {
+      background-color: #4CAF50;
+      color: white;
+      text-align: left;
+      padding: 8px;
+    }
+
+    #day-details-table td, #day-details-table th {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+
+    #day-details-table tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    #day-details-table tr:hover {
+      background-color: #ddd;
+    }
+
+    /* Style for the local storage message element */
+    #local-storage-message {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      z-index: 9999;
+    }
+    /* Style for the day details form */
+    label, select {
+    display: block;
+    margin-bottom: 10px;
+    }
+    
+    /* Style for the submit button */
+    #submit-button {
+    display: block;
+    margin-top: 10px;
+    }
+    
+    /* Style for the day details table */
+    #day-details-table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    }
+    
+    #day-details-table th {
+    background-color: #4CAF50;
+    color: white;
+    text-align: left;
+    padding: 8px;
+    }
+    
+    #day-details-table td, #day-details-table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    }
+    
+    #day-details-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+    }
+    
+    #day-details-table tr:hover {
+    background-color: #ddd;
+    }
+    
+    /* Style for the local storage message element */
+    #local-storage-message {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    z-index: 9999;
+    }
+    
+  </style>
+</head>
+<body>
+  <form id="day-details-form">
+    <label for="date">Date:</label>
+    <input type="date" id="date" required>
+    <label for="skill">Skill enhancement:</label>
+    <select id="skill" required>
+      <option value="">Select a skill enhancement</option>
+      <option value="Coding">Coding</option>
+      <option value="Design">Design</option>
+      <option value="Marketing">Marketing</option>
+      <option value="Writing">Writing</option>
+      <option value="Other">Other</option>
+    </select>
+    <label for="schedule">Tutoring schedule:</label>
+    <select id="schedule" multiple required>
+      <option value="Morning">Morning</option>
+      <option value="Afternoon">Afternoon</option>
+      <option value="Evening">Evening</option>
+      <option value="Night">Night</option>
+    </select>
+    <button id="submit-button">Submit</button>
+  </form>
+
+  <table id="day-details-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Date</th>
+        <th>Skill Enhancement</th>
+        <th>Tutoring Schedule</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="local-storage-message"></div>
+
+  <script>
+    const dayDetailsTable = document.getElementById('day-details-table');
+
+    // Load day details from local storage and add them to the table
+    loadDayDetailsFromLocalstorage();
+
+    // Add submit event listener to form
+    document.getElementById('day-details-form').addEventListener('submit', saveDayDetails);
+
+    // Add click event listener to table to prevent editing
+    dayDetailsTable.addEventListener('click', (event) => {
+      if (event.target.tagName === 'TD') {
+        event.target.setAttribute('contenteditable', 'false');
+      }
+    });
+
+    // Add double click event listener to table to allow editing
+    dayDetailsTable.addEventListener
+('dblclick', (event) => {
+if (event.target.tagName === 'TD') {
+event.target.setAttribute('contenteditable', 'true');
+}
+});function saveDayDetails(event) {
+  event.preventDefault();
+  const date = document.getElementById('date').value;
+  const skill = document.getElementById('skill').value;
+  const schedule = Array.from(document.getElementById('schedule').options)
+    .filter(option => option.selected)
+    .map(option => option.value)
+    .join(', ');
+  const id = `day-${Date.now()}`;
+  const row = `
+    <tr id="${id}">
+      <td>${id}</td>
+      <td>${date}</td>
+      <td>${skill}</td>
+      <td>${schedule}</td>
+    </tr>
+  `;
+  dayDetailsTable.querySelector('tbody').insertAdjacentHTML('beforeend', row);
+  saveDayDetailsToLocalstorage(id, date, skill, schedule);
+  document.getElementById('day-details-form').reset();
+  showMessage('Day details saved successfully');
+}
+
+function saveDayDetailsToLocalstorage(id, date, skill, schedule) {
+  const dayDetails = JSON.parse(localStorage.getItem('dayDetails')) || {};
+  dayDetails[id] = { date, skill, schedule };
+  localStorage.setItem('dayDetails', JSON.stringify(dayDetails));
+}
+
+function loadDayDetailsFromLocalstorage() {
+  const dayDetails = JSON.parse(localStorage.getItem('dayDetails')) || {};
+  for (const id in dayDetails) {
+    const { date, skill, schedule } = dayDetails[id];
+    const row = `
+      <tr id="${id}">
+        <td>${id}</td>
+        <td>${date}</td>
+        <td>${skill}</td>
+        <td>${schedule}</td>
+      </tr>
+    `;
+    dayDetailsTable.querySelector('tbody').insertAdjacentHTML('beforeend', row);
+  }
+}
+
+function showMessage(message) {
+  const messageElement = document.getElementById('local-storage-message');
+  messageElement.textContent = message;
+  messageElement.style.display = 'block';
+  setTimeout(() => {
+    messageElement.style.display = 'none';
+  }, 3000);
+}</script>
+</body></html></DOCTYPE>
