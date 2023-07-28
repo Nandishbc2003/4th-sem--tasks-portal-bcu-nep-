@@ -1,0 +1,102 @@
+<div id="notifications-panel">
+  <h2>Notifications</h2>
+  <ul id="notifications-list"></ul>
+</div>
+
+<div id="input-form">
+  <h2>New Notification</h2>
+  <label for="title-input">Title:</label>
+  <input type="text" id="title-input">
+  <label for="content-input">Content:</label>
+  <textarea id="content-input"></textarea>
+  <button id="save-button">Save</button>
+</div>
+
+<table id="notifications-table">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Content</th>
+    </tr>
+  </thead>
+  <tbody id="notifications-body"></tbody>
+</table>
+<script type="text/javascript">const notificationsList = document.getElementById("notifications-list");
+const saveButton = document.getElementById("save-button");
+const notificationsTable = document.getElementById("notifications-table");
+const notificationsBody = document.getElementById("notifications-body");
+
+function addNotification(title, content) {
+  const notification = document.createElement("li");
+  notification.classList.add("notification");
+  notification.innerHTML = `<h3>${title}</h3><p>${content}</p>`;
+  
+  // add the hover effect
+  notification.addEventListener("mouseenter", () => {
+    notification.classList.add("hover");
+  });
+  notification.addEventListener("mouseleave", () => {
+    notification.classList.remove("hover");
+  });
+  
+  notificationsList.appendChild(notification);
+  
+  // move the notification from left to right using CSS animation
+  notification.style.animation = "move-notification 2s forwards";
+  
+  // add the notification to the table and local storage
+  const row = notificationsBody.insertRow(0);
+  row.innerHTML = `<td>${title}</td><td>${content}</td>`;
+  localStorage.setItem(title, content);
+}
+
+saveButton.addEventListener("click", () => {
+  const titleInput = document.getElementById("title-input");
+  const contentInput = document.getElementById("content-input");
+  const title = titleInput.value;
+  const content = contentInput.value;
+  
+  addNotification(title, content);
+  
+  // reset the input form
+  titleInput.value = "";
+  contentInput.value = "";
+});
+</script>
+<style type="text/css">@keyframes move-notification {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.notification {
+  animation-duration: 2s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.notification.hover {
+  background-color: green;
+}
+
+#notifications-table {
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+#notifications-table th, #notifications-table td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid red;
+}
+
+#notifications-table th {
+  background-color: blue;
+  font-weight: bold;
+}
+</style>
