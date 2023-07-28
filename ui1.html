@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">h1 {
+  text-align: center;
+}
+
+form {
+  margin: 20px;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+}
+
+input, textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+button {
+  margin-top: 10px;
+}
+
+#task-list {
+  margin: 20px;
+}
+</style>
+  <title>Daily Task Keeper</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <h1>Daily Task Keeper</h1>
+
+  <form>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date">
+
+    <label for="day">Day:</label>
+    <input type="text" id="day" name="day">
+
+    <label for="details">Details:</label>
+    <textarea id="details" name="details"></textarea>
+
+    <button type="button" id="save-btn">Save</button>
+  </form>
+
+  <div id="task-list"></div>
+
+ <script type="text/javascript">// Save task to local storage
+ function saveTask() {
+ // Get form data
+ var date = document.getElementById("date").value;
+ var day = document.getElementById("day").value;
+ var details = document.getElementById("details").value;
+ 
+ // Create task object
+ var task = {
+ date: date,
+ day: day,
+ details: details
+ };
+ 
+ // Save task to local storage
+ localStorage.setItem(date, JSON.stringify(task));
+ 
+ // Clear form fields
+ document.getElementById("date").value = "";
+ document.getElementById("day").value = "";
+ document.getElementById("details").value = "";
+ 
+ // Refresh task list
+ refreshTaskList();
+ }
+ 
+ // Refresh task list from local storage
+ function refreshTaskList() {
+ // Clear existing task list
+ var taskList = document.getElementById("task-list");
+ taskList.innerHTML = "";
+ 
+ // Get all keys from local storage
+ var keys = Object.keys(localStorage);
+ 
+ // Loop through keys and display tasks
+ for (var i = 0; i < keys.length; i++) {
+ // Get task object from local storage
+ var task = JSON.parse(localStorage.getItem(keys[i]));
+ 
+ // Create HTML element for task and add to page
+ var taskElement = document.createElement("div");
+ taskElement.innerHTML = task.date + " - " + task.day + " - " + task.details;
+ taskList.appendChild(taskElement);
+ }
+ }
+ 
+ // Add click event listener to save button
+ var saveBtn = document.getElementById("save-btn");
+ saveBtn.addEventListener("click", saveTask);
+ 
+ // Refresh task list on page load
+ window.addEventListener("load", refreshTaskList);
+ </script>
+</body>
+</html>
