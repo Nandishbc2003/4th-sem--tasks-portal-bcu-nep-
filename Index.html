@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+CSS:
+
+```css
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 20px;
+}
+
+h1 {
+	text-align: center;
+}
+
+input[type="text"] {
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 20px 0;
+}
+
+table th, table td {
+	padding: 8px;
+	text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
+table th {
+	background-color: #f2f2f2;
+}
+
+button {
+	background-color: #4CAF50;
+	color: white;
+	border: none;
+	padding: 8px 16px;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #3e8e41;
+}
+
+.completed-btn {
+	background-color: #008CBA;
+}
+
+.completed-btn:hover {
+	background-color: #0078A7;
+}
+
+#generate-certificate {
+	background-color: #f44336;
+}
+
+#generate-certificate:hover {
+	background-color: #d32f2f;
+}
+
+#generate-certificate:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+}
+
+#generate-certificate:not(:disabled) {
+	color: white;
+}
+</style>
+	<title>Semester Task Management System</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<header><h2><center>NBC SOLUTIONS 
+		<h1>4 Semester Task Management System</h1>
+		<h2>Student Details</h2>
+		<div>
+			<label for="name">Name:</label>
+			<input type="text" id="name" name="name" required>
+			<label for="id">ID:</label>
+			<input type="text" id="id" name="id" required>
+			<label for="college">College:</label>
+			<input type="text" id="college" name="college" required>
+			<label for="board">Board:</label>
+			<input type="text" id="board" name="board" required>
+			<label for="university">University:</label>
+			<input type="text" id="university" name="university" required>
+		</div>
+	</header>
+	<main>
+		<section>
+			<h2>To Do List</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Task</th>
+						<th>Due Date</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody id="todo-list">
+					<!-- Predefined tasks will be added here -->
+				</tbody>
+			</table>
+		</section>
+		<section>
+			<h2>Completed Tasks</h2>
+			<table>
+				<thead>
+					<tr>
+						<th>Task</th>
+						<th>Date Completed</th>
+					</tr>
+				</thead>
+				<tbody id="completed-list">
+					<!-- Completed tasks will be added here -->
+				</tbody>
+			</table>
+			<button id="generate-certificate" disabled>Generate Certificate</button>
+		</section>
+	</main>
+	
+	<footer>
+		<p>&copy; 2023 4th Semester Task Management System</p>
+	</footer>
+	<script type="text/javascript">// Get the input fields
+	const nameInput = document.getElementById("name");
+	const idInput = document.getElementById("id");
+	const collegeInput = document.getElementById("college");
+	const boardInput = document.getElementById("board");
+	const universityInput = document.getElementById("university");
+	
+	// Get the todo list and completed list
+	const todoList = document.getElementById("todo-list");
+	const completedList = document.getElementById("completed-list");
+	
+	// Get the generate certificate button
+	const generateCertificateBtn = document.getElementById("generate-certificate");
+	
+	// Define the tasks with due dates
+	const tasks = [
+	{ task: "Task 1-PREPARATION OF NBC ED SOLUTIONS PLATFORM", dueDate: "2023-11-1" },
+	{ task: "Task 2-PREPARTION OF 5 USEFUL WEBAPPS IN INTERNET AND ADD ADSENSE", dueDate: "2023-11-1" },
+	{ task: "Task 3-EXPERTISE IN 4TH SEM SYLLABUS FOR 9.CGPA", dueDate: "2023-11-1" },
+	{ task: "Task 4-EXPERTISE CHANGE IN VERSION OF SOFTWARE DEVELOPMENT", dueDate: "2023-11-1" },
+	{ task: "Task 5-PREPARTION OF SIKSHAN QUESTION BANK", dueDate: "2023-11-1" },
+	{ task: "Task 6-PREPARTION OF LMS PLATFORM FOR USHA AKKA AND ALSO LAUNCHING IT ON PLAYSTORE ", dueDate: "2023-11-1" },
+	{ task: "Task 7-SOFTWARE FOR NBC KIT DESIGN THE ARCHITECTURE", dueDate: "2023-11-1" },
+	{ task: "Task 8-TUTORING WITH CLIENTS WITH BEST AND BETTER EXPERIENCE", dueDate: "2023-11-1" },
+	{ task: "Task 9-3000 TOOLS AND RESOURES SYSTEM ", dueDate: "2023-11-1" },
+	{ task: "Task 10-CREATION OF 4 SEM LMS COLLEGE KIT AND REPORT AND FIXING TO BUILD NBC KIT", dueDate: "2023-11-1" }
+	];
+	
+	// Populate the todo list with the predefined tasks
+	tasks.forEach(task => {
+	const row = document.createElement("tr");
+	row.innerHTML = `
+	<td>${task.task}</td>
+	<td>${task.dueDate}</td>
+	<td>
+	<button class="completed-btn">Completed</button>
+	</td>
+	`;
+	todoList.appendChild(row);
+	});
+	
+	// Add event listener to each completed button
+	const completedBtns = document.getElementsByClassName("completed-btn");
+	Array.from(completedBtns).forEach(completedBtn => {
+	completedBtn.addEventListener("click", () => {
+	// Get the row of the completed task
+	const row = completedBtn.parentNode.parentNode;
+	
+	// Get the task name and date completed
+	const taskName = row.cells[0].textContent;
+	const dateCompleted = new Date().toLocaleDateString();
+	
+	// Add the completed task to the completed list
+	const completedRow = document.createElement("tr");
+	completedRow.innerHTML = `
+	<td>${taskName}</td>
+	<td>${dateCompleted}</td>
+	`;
+	completedList.appendChild(completedRow);
+	
+	// Remove the task from the todo list
+	row.remove();
+	
+	// Enable the generate certificate button if all tasks are completed
+	if (todoList.rows.length === 0) {
+	generateCertificateBtn.disabled = false;
+	}
+	});
+	});
+	
+	// Add event listener to the generate certificate button
+	generateCertificateBtn.addEventListener("click", () => {
+	// Get the student details
+	const name = nameInput.value;
+	const id = idInput.value;
+	const college = collegeInput.value;
+	const board = boardInput.value;
+	const university = universityInput.value;
+	
+	// Check if all details are entered
+	if (name && id && college && board && university) {
+	// Check if all tasks are completed
+	if (todoList.rows.length === 0) {
+	// Generate the certificate
+	const certificate = `
+	<h2>Certificate of Completion</h2>
+	<p>This is to certify that ${name}, with ID ${id}, has successfully completed all
+	the tasks for the Task Management System course offered by ${university}. The course was conducted by the ${board} board and the student was enrolled through ${college}.</p>
+	`;// Display the certificate in a new window
+	const certificateWindow = window.open("", "Certificate", "width=600,height=400");
+	certificateWindow.document.write(certificate);
+		} else {
+	alert("Please complete all tasks before generating the certificate.");
+		}
+	} else {
+		alert("Please enter all details before generating the certificate.");
+	}
+	});</script>
+</body>
+</html>
+    <center><a href="ui1.html"><center>FUNCTION 1</a>
+    <br /><br /><a href="ui2.html">
+
+      FUNCTION 2
+    </a><br /><br /><a href="ui3.html">
+FUNCTION 3
+
+      
+    </a><br /><br /><a href="ui4.html"> FUNCTION 4</a><br /><br /><a href="ui5.html">FUNCTION 5</a>
