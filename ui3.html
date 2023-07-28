@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style type="text/css">body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+label {
+  margin: 10px 0;
+}
+
+input, textarea {
+  margin: 5px 0;
+  padding: 5px;
+  border: none;
+  border-radius: 5px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+button {
+  margin: 10px 0;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#notifications {
+  margin: 20px;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+h2 {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  margin-top: 10px;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid #007bff;
+  padding: 5px;
+  text-align: center;
+}
+
+th {
+background-color: #007bff;
+color: white;
+}
+
+#table-body td:last-child {
+display: flex;
+justify-content: space-evenly;
+}
+
+#table-body td:last-child button {
+padding: 5px;
+border: none;
+border-radius: 5px;
+background-color: #007bff;
+color: white;
+font-weight: bold;
+cursor: pointer;
+}
+
+#table-body td:last-child button.edit-btn {
+background-color: #ffc107;
+}
+
+#table-body td:last-child button.delete-btn {
+background-color: #dc3545;
+}
+
+.alert {
+background-color: #fff3cd;
+border: 1px solid #ffeeba;
+border-radius: 5px;
+padding: 10px;
+margin-bottom: 10px;
+box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.neumorphsim {
+background-color: #fff;
+box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+border-radius: 5px;
+padding: 10px;
+margin-bottom: 10px;
+}
+
+.copy-success {
+color: green;
+}
+
+.copy-fail {
+color: red;
+}</style>
+  <meta charset="UTF-8">
+  <title>Notification Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Notification Generator</h1>
+  <form>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+
+    <label for="day">Day:</label>
+    <input type="text" id="day" name="day" required>
+
+    <label for="subject">Subject:</label>
+    <input type="text" id="subject" name="subject" required>
+
+    <label for="ref">Reference Number:</label>
+    <input type="text" id="ref" name="ref" required>
+
+    <label for="info">Information:</label>
+    <textarea id="info" name="info" rows="4" cols="50" required></textarea>
+
+    <label for="sign">Sign:</label>
+    <input type="text" id="sign" name="sign" required>
+
+    <button type="submit" id="submit">Submit</button>
+  </form>
+
+  <div id="notifications">
+    <h2>Notifications</h2>
+    <button id="copy-btn">Copy All</button>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Day</th>
+          <th>Subject</th>
+          <th>Reference Number</th>
+          <th>Information</th>
+          <th>Sign</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script type="text/javascript">
+ 
+  $(document).ready(function() {
+  // Retrieve notifications from local storage
+  let notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+  
+  // Display notifications on page load
+  displayNotifications();
+  
+  // Handle form submission
+  $('form').submit(function(e) {
+  e.preventDefault();
+  
+  // Get form values
+  let date = $('#date').val();
+  let day = $('#day').val();
+  let subject = $('#subject').val();
+  let ref = $('#ref').val();
+  let info = $('#info').val();
+  let sign = $('#sign').val();
+  
+  // Create notification object
+  let notification = {
+  date: date,
+  day: day,
+  subject: subject,
+  ref: ref,
+  info: info,
+  sign: sign
+  };
+  
+  // Add notification to array
+  notifications.push(notification);
+  
+  // Store notifications in local storage
+  localStorage.setItem('notifications', JSON.stringify(notifications));
+  
+  // Clear form values
+  $('form')[0].reset();
+  
+  // Display success message
+  displayAlert('Notification added successfully!', 'success');
+  
+  // Display updated notifications
+  displayNotifications();
+  });
+  
+  // Handle copy button click
+  $('#copy-btn').click(function() {
+  // Get table as text
+  let tableText = $('#notifications table').table2csv({
+  delivery: 'value'
+  });
+  
+  // Copy text to clipboard
+  let copySuccess = copyToClipboard(tableText);
+  
+  // Display copy success/fail message
+  if (copySuccess) {
+  displayAlert('Notifications copied to clipboard!', 'copy-success');
+  } else {
+  displayAlert('Failed to copy notifications!', 'copy-fail');
+  }
+  });
+  
+  // Handle edit/delete button clicks
+  $('#table-body').on('click', 'button', function() {
+  let row = $(this).closest('tr');
+  let index = row.index();
+  
+  if ($(this).hasClass('edit-btn')) {
+  // Edit notification
+  let notification = notifications[index];
+  $('#date').val(notification.date);
+  $('#day').val(notification.day);
+  $('#subject').val(notification.subject);
+  $('#ref').val(notification.ref);
+  $('#info').val(notification.info);
+  $('#sign').val(notification.sign);
+  notifications.splice(index, 1);
+  localStorage.setItem('notifications',
+  JSON.stringify(notifications));
+  displayNotifications();
+  } else if ($(this).hasClass('delete-btn')) {
+  // Delete notification
+  notifications.splice(index, 1);
+  localStorage.setItem('notifications', JSON.stringify(notifications));
+  displayNotifications();
+  }
+  });
+  
+  // Function to display notifications
+  function displayNotifications() {
+  let tableBody = $('#table-body');
+  tableBody.html('');// Loop through notifications and add to table
+  notifications.forEach(function(notification) {
+  let row = $('<tr>');
+  let dateCell = $('<td>').text(notification.date);
+  let dayCell = $('<td>').text(notification.day);
+  let subjectCell = $('<td>').text(notification.subject);
+  let refCell = $('<td>').text(notification.ref);
+  let infoCell = $('<td>').text(notification.info);
+  let signCell = $('<td>').text(notification.sign);
+  let actionCell = $('<td>');
+  let editBtn = $('<button>').text('Edit').addClass('edit-btn');
+  let deleteBtn = $('<button>').text('Delete').addClass('delete-btn');
+  actionCell.append(editBtn, deleteBtn);
+  row.append(dateCell, dayCell, subjectCell, refCell, infoCell, signCell, actionCell);
+  tableBody.append(row);
+  });
+  }
+  
+  // Function to display alerts
+  function displayAlert(message, type) {
+  let alertDiv = $('<div>').addClass('alert').addClass(type).text(message);
+  $('#notifications').prepend(alertDiv);
+  setTimeout(function() {
+  alertDiv.fadeOut(500, function() {
+  $(this).remove();
+  });
+  }, 3000);
+  }
+  
+  // Function to copy text to clipboard
+  function copyToClipboard(text) {
+  let textarea = $('<textarea>').val(text).appendTo('body').select();
+  let copySuccess = false;
+  try {
+  copySuccess = document.execCommand('copy');
+  } catch (err) {
+  console.log('Failed to copy text: ', err);
+  }
+  textarea.remove();
+  return copySuccess;
+  }
+  });// Function to copy text to clipboard
+  function copyToClipboard(text) {
+  let copySuccess = false;
+  try {
+  let textarea = document.createElement('textarea');
+  textarea.value = text;
+  document.body.appendChild(textarea);
+  textarea.select();
+  copySuccess = document.execCommand('copy');
+  document.body.removeChild(textarea);
+  } catch (err) {
+  console.log('Failed to copy text: ', err);
+  }
+  return copySuccess;
+  }
+  </script>
+</body>
+  </html>
